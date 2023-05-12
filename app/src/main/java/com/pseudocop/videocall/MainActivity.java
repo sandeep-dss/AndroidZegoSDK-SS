@@ -3,7 +3,7 @@ package com.pseudocop.videocall;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import android.app.Application;
+import android.content.Intent;
 import android.media.projection.MediaProjectionManager;
 import android.os.Bundle;
 import android.view.View;
@@ -38,13 +38,14 @@ public class MainActivity extends AppCompatActivity {
     // Users must log in to the same room to call each other.
     private String roomID;
 
+
     @Override
     protected void onDestroy() {
         destroyEngine();
         super.onDestroy();
     }
 
-    public static MediaProjectionManager mMediaProjectionManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,22 +61,14 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        if (Build.VERSION.SDK_INT <21) {
-            Toast.makeText(getApplicationContext(), "Require Permission for Recording", Toast.LENGTH_SHORT).show();
-            finish();
-        } else {
-            // 5.0 and above
-            // Request screen recording permission, wait for user authorization
-            mMediaProjectionManager = (MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);
-            startActivityForResult(mMediaProjectionManager.createScreenCaptureIntent(), 1234);
-        }
+
 
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        userID = "d1o2i3naskld";
-        userName = "AmTeja";
+        userID = "d1o2i3naskle";
+        userName = "hello";
         roomID = "hi_test_room";
 
         createEngine();
@@ -88,6 +81,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 finish();
+            }
+        });
+        findViewById(R.id.shareScreenBtn).setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, ShareScreen.class));
             }
         });
     }
