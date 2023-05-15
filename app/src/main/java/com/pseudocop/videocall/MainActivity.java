@@ -4,8 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
+import android.hardware.display.DisplayManager;
+import android.hardware.display.VirtualDisplay;
+import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.Surface;
+import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Toast;
 
@@ -29,7 +35,28 @@ import java.util.ArrayList;
 
 import org.json.JSONObject;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ShareScreen.ShareScreenListener {
+
+    @Override
+    public void onScreenShared(MediaProjection mediaProjection) {
+        SurfaceView screenShareSurfaceView = findViewById(R.id.screen_share_surface_view);
+        Surface screenShareSurface = screenShareSurfaceView.getHolder().getSurface();
+
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        int screenWidth = displayMetrics.widthPixels;
+        int screenHeight = displayMetrics.heightPixels;
+
+        VirtualDisplay virtualDisplay = mediaProjection.createVirtualDisplay(
+                "ScreenShare",
+                screenWidth,
+                screenHeight,
+                displayMetrics.densityDpi,
+                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                screenShareSurface,
+                null,
+                null
+        );
+    }
 
     private String userID;
     private String userName;
@@ -44,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         destroyEngine();
         super.onDestroy();
     }
+
 
 
 
@@ -67,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        userID = "d1o2i3naskle";
+        userID = "d1o2i3nasklf";
         userName = "hello";
         roomID = "hi_test_room";
 
@@ -86,7 +114,11 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.shareScreenBtn).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, ShareScreen.class));
+//                startActivity(new Intent(MainActivity.this, ShareScreen.class));
+                Intent intent = new Intent(MainActivity.this, ShareScreen.class);
+                startActivity(intent);
+                ShareScreen shareScreen = new ShareScreen();
+                shareScreen.setShareScreenListener(MainActivity.this);
             }
         });
     }
@@ -308,3 +340,4 @@ public class MainActivity extends AppCompatActivity {
         ZegoExpressEngine.getEngine().setEventHandler(null);
     }
 }
+

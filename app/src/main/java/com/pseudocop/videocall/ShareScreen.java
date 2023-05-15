@@ -51,6 +51,11 @@ public class ShareScreen extends AppCompatActivity {
     }
     private VirtualDisplay mVirtualDisplay;
 
+    public interface ShareScreenListener {
+        void onScreenShared(MediaProjection mediaProjection);
+    }
+
+
     private void setupVirtualDisplay() {
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -58,7 +63,7 @@ public class ShareScreen extends AppCompatActivity {
         int height = metrics.heightPixels;
         int density = metrics.densityDpi;
 
-        SurfaceView surfaceView = findViewById(R.id.surface_view);
+        SurfaceView surfaceView = findViewById(R.id.screen_share_surface_view);
         Surface surface = surfaceView.getHolder().getSurface();
 
         mVirtualDisplay = mMediaProjection.createVirtualDisplay("ScreenShare",
@@ -102,6 +107,9 @@ public class ShareScreen extends AppCompatActivity {
         if (requestCode == 1234 && resultCode == RESULT_OK) {
             setupVirtualDisplay();
             mMediaProjection = mMediaProjectionManager.getMediaProjection(resultCode, data);
+            if (mListener != null) {
+                mListener.onScreenShared(mMediaProjection);
+            }
 //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 //                //Target version higher than or equal to 10.0 needs to use the foreground service, and create a MediaProjection in the onStartCommand method of the foreground service
 //                service = new Intent(ShareScreen.this, MainActivity.class);
@@ -114,4 +122,10 @@ public class ShareScreen extends AppCompatActivity {
 //            }
         }
     }
+    private ShareScreenListener mListener;
+
+    public void setShareScreenListener(ShareScreenListener listener) {
+        mListener = listener;
     }
+
+}
